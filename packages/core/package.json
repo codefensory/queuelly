@@ -1,0 +1,21 @@
+{
+  "name": "@queuelly/core",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Add dev script here'",
+    "build": "echo 'Add build script here'",
+    "test": "vitest run",
+    "lint": "echo 'Add lint script here'"
+  },
+  "peerDependencies": {
+    "typescript": "*",
+    "vitest": "*",
+    "debug": "*"
+  },
+  "dependencies": {
+    "@types/shortid": "^0.0.32",
+    "oxide.ts": "^1.1.0",
+    "shortid": "^2.2.16"
+  }
+}

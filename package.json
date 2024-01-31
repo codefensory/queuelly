@@ -1,0 +1,21 @@
+{
+  "name": "queuelly",
+  "version": "1.0.0",
+  "description": "A smart promise management library for JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "turbo run test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@8.14.1",
+  "dependencies": {
+    "@types/debug": "^4.1.12",
+    "debug": "^4.3.4",
+    "prettier": "^3.2.4",
+    "turbo": "^1.12.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  }
+}
