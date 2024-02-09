@@ -7,9 +7,6 @@ export interface QueuellyOptions<V, R> {
   depends?: string[];
   waitFor?: string[];
   canReplace?: boolean;
-
-  value?: V;
-
   onComplete?(isLast: boolean, value: R, lastValueCompleted?: V | R): void;
   onError?(isLast: boolean, value: V | undefined): void;
 }
