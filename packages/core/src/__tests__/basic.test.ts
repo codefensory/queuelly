@@ -241,4 +241,132 @@ describe("Basic uses cases", () => {
 
     expect(control(1).ranBefore(3)).toBe(true)
   })
+
+  it("will execute all promises and assign to the optimistic update the last one completed", async () => {
+    const numberLocalAPI = createNumberLocalAPI()
+
+    let optimisticValue = 0
+
+    const { run, ranAllOfThese } = runran()
+
+    const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
+
+    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+
+    const createAddSpot = (value: number, opts: { key: number }) => {
+      return queuelly.add({
+        name: 'add',
+        action: () => run(numberLocalAPI.make().add(value), opts.key),
+        onComplete: (isLast, value) => {
+          if (isLast) {
+            optimisticValue = value
+          }
+        }
+      })
+    }
+
+    const createUpdateSpot = (value: number, opts: { key: number }) => {
+      return queuelly.add({
+        name: 'update',
+        depends: ['add'],
+        waitFor: ["update"],
+        canReplace: true,
+        action: () => run(numberLocalAPI.make().update(value), opts.key),
+        onComplete: (isLast, value) => {
+          if (isLast) {
+            optimisticValue = value
+          }
+        }
+      })
+    }
+
+    createAddSpot(1, { key: 0 })
+
+    createAddSpot(2, { key: 1 })
+
+    createUpdateSpot(4, { key: 2 })
+
+    createUpdateSpot(2, { key: 3 })
+
+    createAddSpot(3, { key: 4 })
+
+    createUpdateSpot(4, { key: 5 })
+
+    await completedQueuelly
+
+    expect(numberLocalAPI.get()).toBe(4)
+
+    expect(optimisticValue).toBe(4)
+
+    expect(ranAllOfThese([0, 1, 3, 4, 5])).toBe(true)
+  })
+
+  it("should update the optimistic when a spot fails", async () => {
+    const numberLocalAPI = createNumberLocalAPI()
+
+    let optimisticValue = 0
+
+    const { run, control } = runran()
+
+    const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
+
+    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+
+    const createAddSpot = (value: number, opts: { key: number, fails?: boolean }) => {
+      return queuelly.add({
+        name: 'add',
+        action: () => run(numberLocalAPI.make({ fails: opts.fails }).add(value), opts.key),
+        onComplete: (isLast, value) => {
+          if (isLast) {
+            optimisticValue = value
+          }
+        },
+        onError: (isLast, value) => {
+          if (isLast && value) {
+            optimisticValue = value
+          } else {
+            optimisticValue -= 1
+          }
+        }
+      })
+    }
+
+    const createUpdateSpot = (value: number, opts: { key: number, fails?: boolean }) => {
+      return queuelly.add({
+        name: 'update',
+        depends: ['add'],
+        waitFor: ["update"],
+        canReplace: true,
+        action: () => run(numberLocalAPI.make({ fails: opts.fails }).update(value), opts.key),
+        onComplete: (isLast, value) => {
+          if (isLast) {
+            optimisticValue = value
+          }
+        },
+        onError: (isLast, value) => {
+          if (isLast && value) {
+            optimisticValue = value
+          }
+        }
+      })
+    }
+
+    createAddSpot(1, { key: 0 })
+
+    createAddSpot(2, { key: 1 })
+
+    createUpdateSpot(2, { key: 3 })
+
+    createAddSpot(3, { key: 4, fails: true })
+
+    createAddSpot(2, { key: 4 })
+
+    createUpdateSpot(4, { key: 3, fails: true })
+
+    await completedQueuelly
+
+    expect(numberLocalAPI.get()).toBe(4)
+
+    expect(optimisticValue).toBe(4)
+  })
 })
