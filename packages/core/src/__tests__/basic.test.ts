@@ -247,7 +247,7 @@ describe("Basic uses cases", () => {
 
     let optimisticValue = 0
 
-    const { run, ranAllOfThese } = runran()
+    const { run, ranOrder } = runran()
 
     const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
 
@@ -256,6 +256,7 @@ describe("Basic uses cases", () => {
     const createAddSpot = (value: number, opts: { key: number }) => {
       return queuelly.add({
         name: 'add',
+        waitFor: ['update'],
         action: () => run(numberLocalAPI.make().add(value), opts.key),
         onComplete: (isLast, value) => {
           if (isLast) {
@@ -298,7 +299,7 @@ describe("Basic uses cases", () => {
 
     expect(optimisticValue).toBe(4)
 
-    expect(ranAllOfThese([0, 1, 3, 4, 5])).toBe(true)
+    expect(ranOrder()).toBe([0, 1, 3, 4, 5].toString())
   })
 
   it("should update the optimistic when a spot fails", async () => {
@@ -306,7 +307,7 @@ describe("Basic uses cases", () => {
 
     let optimisticValue = 0
 
-    const { run, control } = runran()
+    const { run, ranOrder } = runran()
 
     const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
 
@@ -315,6 +316,7 @@ describe("Basic uses cases", () => {
     const createAddSpot = (value: number, opts: { key: number, fails?: boolean }) => {
       return queuelly.add({
         name: 'add',
+        waitFor: ['update'],
         action: () => run(numberLocalAPI.make({ fails: opts.fails }).add(value), opts.key),
         onComplete: (isLast, value) => {
           if (isLast) {
@@ -355,18 +357,90 @@ describe("Basic uses cases", () => {
 
     createAddSpot(2, { key: 1 })
 
-    createUpdateSpot(2, { key: 3 })
+    createUpdateSpot(2, { key: 2 })
 
-    createAddSpot(3, { key: 4, fails: true })
+    createAddSpot(3, { key: 3, fails: true })
 
     createAddSpot(2, { key: 4 })
 
-    createUpdateSpot(4, { key: 3, fails: true })
+    createUpdateSpot(4, { key: 5, fails: true })
 
     await completedQueuelly
 
     expect(numberLocalAPI.get()).toBe(4)
 
     expect(optimisticValue).toBe(4)
+
+    expect(ranOrder()).toBe([0, 1, 2, 3, 4, 5].toString())
+  })
+
+  it("should return the value of the last one that was executed, and not the last one in the queue", async () => {
+    const numberLocalAPI = createNumberLocalAPI()
+
+    let optimisticValue = 0
+
+    const { run, ranOrder } = runran()
+
+    const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
+
+    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+
+    const createAddSpot = (value: number, opts: { key: number, fails?: boolean, delay: number }) => {
+      return queuelly.add({
+        name: 'add',
+        waitFor: ['update'],
+        action: () => run(numberLocalAPI.make({ fails: opts.fails, delay: opts.delay }).add(value), opts.key),
+        onComplete: (isLast, value) => {
+          if (isLast) {
+            optimisticValue = value
+          }
+        },
+        onError: (isLast, value) => {
+          if (isLast && value) {
+            optimisticValue = value
+          } else {
+            optimisticValue -= 1
+          }
+        }
+      })
+    }
+
+    const createUpdateSpot = (value: number, opts: { key: number, fails?: boolean }) => {
+      return queuelly.add({
+        name: 'update',
+        depends: ['add'],
+        waitFor: ["update"],
+        canReplace: true,
+        action: () => run(numberLocalAPI.make({ fails: opts.fails }).update(value), opts.key),
+        onComplete: (isLast, value) => {
+          if (isLast) {
+            optimisticValue = value
+          }
+        },
+        onError: (isLast, value) => {
+          if (isLast && value) {
+            optimisticValue = value
+          }
+        }
+      })
+    }
+
+    createUpdateSpot(2, { key: 0 })
+
+    createAddSpot(2, { key: 2, delay: 100 })
+
+    createAddSpot(1, { key: 1, delay: 400 })
+
+    createAddSpot(2, { key: 3, delay: 101 })
+
+    createAddSpot(1, { key: 4, delay: 102 })
+
+    await completedQueuelly
+
+    expect(numberLocalAPI.get()).toBe(8)
+
+    expect(optimisticValue).toBe(8)
+
+    expect(ranOrder()).toBe([0, 2, 3, 4, 1].toString())
   })
 })

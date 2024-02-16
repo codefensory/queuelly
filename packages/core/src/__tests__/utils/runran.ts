@@ -3,10 +3,16 @@ function runran() {
 
   let executes: Record<string | number, number> = {}
 
-  function run<T>(value: T, key: string | number) {
-    executes[key] = index
+  function run<T extends Promise<any>>(value: T, key: string | number) {
+    value.then(() => {
+      executes[key] = index
 
-    index--
+      index--
+    }).catch(() => {
+      executes[key] = index
+
+      index--
+    })
 
     return value
   }
@@ -19,11 +25,9 @@ function runran() {
     }
   }
 
-  const ranAllOfThese = (keys: string[] | number[]) =>
-    keys.filter(key => executes[key] === undefined).length === 0 &&
-    equalArrayValues(keys.map((key) => executes[key]), Object.keys(executes).map(key => executes[key]))
+  const ranOrder = () => Object.keys(executes).sort((a, b) => executes[a] < executes[b] ? 1 : executes[a] > executes[b] ? -1 : 0).toString()
 
-  return { run, control, ranAllOfThese }
+  return { run, control, ranOrder }
 }
 
 function equalArrayValues(arr1: number[], arr2: number[]) {

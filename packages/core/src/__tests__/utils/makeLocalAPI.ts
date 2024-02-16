@@ -49,11 +49,11 @@ class MakeLocalAPI<S, A extends ObjectMethods> {
 
   private generateAction<P extends Method>(opts: RunOptions, action: P): (...args: Parameters<P>) => Promise<ReturnType<P>> {
     return async (...args: Parameters<P>) => {
+      await wait(opts.delay ?? 0)
+
       if (opts.fails) {
         throw new Error('Server Error')
       }
-
-      await wait(opts.delay ?? 0)
 
       return action(...args)
     }
