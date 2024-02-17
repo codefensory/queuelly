@@ -414,6 +414,7 @@ describe("Basic uses cases", () => {
         action: () => run(numberLocalAPI.make({ fails: opts.fails }).update(value), opts.key),
         onComplete: (isLast, value) => {
           if (isLast) {
+            // TODO: Verify total set optimistic
             optimisticValue = value
           }
         },

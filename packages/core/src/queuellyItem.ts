@@ -1,5 +1,5 @@
 import shortid from "shortid"
-import { QueuellyState, findItemByState, findPendingState } from "./utils";
+import { QueuellyState } from "./utils";
 
 export interface QueuellyOptions<V, R> {
   name: string;
@@ -22,9 +22,6 @@ export class QueuellyItem<V, R = any> {
 
   public value: V | R | undefined;
 
-  public prevItem: QueuellyItem<V> | undefined;
-  public nextItem: QueuellyItem<V> | undefined;
-
   public onComplete:
     | ((isLast: boolean, value: R, lastValueCompleted?: V | R) => void)
     | undefined;
@@ -42,36 +39,20 @@ export class QueuellyItem<V, R = any> {
     this.onError = options.onError;
   }
 
-  block() {
-    this.state = QueuellyState.Block;
-  }
-
-  error(validPartial?: boolean) {
+  error() {
     this.state = QueuellyState.Error;
-
-    if (validPartial) {
-      this.nextPartialToComplete(this.nextItem);
-    }
   }
 
   pending() {
     this.state = QueuellyState.Pending;
   }
 
-  complete(validPartial?: boolean) {
+  complete() {
     this.state = QueuellyState.Complete;
-
-    if (validPartial) {
-      this.nextPartialToComplete(this.nextItem);
-    }
   }
 
   partialComplete() {
     this.state = QueuellyState.PartialComplete;
-  }
-
-  cancel() {
-    this.state = QueuellyState.Canceled;
   }
 
   isPending() {
@@ -81,12 +62,8 @@ export class QueuellyItem<V, R = any> {
   isFinally() {
     return !!(
       this.state &
-      (QueuellyState.Complete | QueuellyState.Canceled | QueuellyState.Error)
+      (QueuellyState.Complete | QueuellyState.Error)
     );
-  }
-
-  isBlock() {
-    return this.state === QueuellyState.Block;
   }
 
   isComplete() {
@@ -101,23 +78,7 @@ export class QueuellyItem<V, R = any> {
     return this.state === QueuellyState.Error;
   }
 
-  isCanceled() {
-    return this.state === QueuellyState.Canceled;
-  }
-
-  setPrevItem(item: QueuellyItem<V> | undefined) {
-    this.prevItem = item;
-  }
-
-  canReplaceItem(item: QueuellyItem<V> | undefined) {
-    if (item?.canReplace && item?.isBlock() && item.name === this.name) {
-      return true;
-    }
-
-    return false;
-  }
-
-  containWaitForByName(itemName: string | undefined) {
+  containWaitFor(itemName: string | undefined) {
     if (!itemName) {
       return false;
     }
@@ -125,7 +86,7 @@ export class QueuellyItem<V, R = any> {
     return this.waitFor.indexOf(itemName) !== -1;
   }
 
-  containDependsByName(itemName: string | undefined) {
+  containDepends(itemName: string | undefined) {
     if (!itemName) {
       return false;
     }
@@ -137,53 +98,5 @@ export class QueuellyItem<V, R = any> {
     this.state = QueuellyState.Pending;
 
     return this.action();
-  }
-
-  getCompletedValue() {
-    return findItemByState(this.prevItem, QueuellyState.Complete)?.value;
-  }
-
-  allIsFinally() {
-    return !findItemByState(
-      this.prevItem,
-      QueuellyState.Block | QueuellyState.Pending | QueuellyState.None
-    );
-  }
-
-  isWaitingForPendingState() {
-    if (
-      !this.containWaitForByName(this.prevItem?.name) &&
-      !this.containDependsByName(this.prevItem?.name)
-    ) {
-      return false;
-    }
-
-    return findPendingState(this.prevItem);
-  }
-
-  isDependencyError() {
-    if (!this.containDependsByName(this.prevItem?.name)) {
-      return false;
-    }
-
-    return !!(this.prevItem?.isError() || this.prevItem?.isCanceled());
-  }
-
-  private nextPartialToComplete(item: QueuellyItem<V> | undefined) {
-    if (!item) {
-      return;
-    }
-
-    if (item.isPartialComplete()) {
-      item.complete(true);
-
-      return;
-    }
-
-    if (item.isError()) {
-      this.nextPartialToComplete(item.nextItem);
-
-      return;
-    }
   }
 }
