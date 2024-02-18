@@ -1,6 +1,5 @@
 // TODO: comment all
 // TODO: implements logs
-// TODO: implements events
 
 import debug from "debug";
 
@@ -148,9 +147,5 @@ export class Queuelly<V> {
     this.isPending = false
 
     this.events.dispatchEvent(new Event('endProcess'))
-  }
-
-  private notifyQueueStatus() {
-    this.listener?.(this.isPending);
   }
 }
