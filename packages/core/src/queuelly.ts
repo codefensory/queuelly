@@ -1,5 +1,6 @@
 // TODO: comment all
 // TODO: implements logs
+// TODO: apply types
 
 import debug from "debug";
 
