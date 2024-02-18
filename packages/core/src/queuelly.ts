@@ -1,8 +1,11 @@
+// TODO: comment all
+// TODO: implements logs
+
 import debug from "debug";
 
 import { QueuellyItem, QueuellyOptions } from "./queuellyItem";
 
-const log = debug("spot-system:Queuelly");
+const log = debug("queuelly");
 
 type RejectReason<V> = {
   item: QueuellyItem<V>;
@@ -29,11 +32,11 @@ export class Queuelly<V> {
   ): Promise<V | R | null | undefined> {
     const queuellyItem = new QueuellyItem(queuellyOptions)
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       // TODO: use types
       const queuePromise: any = {
         item: queuellyItem,
-      // TODO: use types
+        // TODO: use types
         resolve: (isLast: any, value: any) => {
           queuellyItem.value = value
 
@@ -43,7 +46,7 @@ export class Queuelly<V> {
 
           resolve(value);
         },
-      // TODO: use types
+        // TODO: use types
         reject: (reason: any, isLast: any, value: any) => {
           queuellyItem.error()
 
@@ -69,31 +72,29 @@ export class Queuelly<V> {
 
     let index = 0
 
-    let promisesRunning = []
+    let promisesRunning: Promise<any>[] = []
+
+    let indexesPromisesRunning: number[] = []
 
     while (index < this.promises.length) {
       const currentPromise = this.promises[index]
 
       const prevPromise = this.promises[index - 1] ?? this.lastComplete
 
+      const nextPromise = this.promises[index + 1]
+
       const forceFail = prevPromise?.item.isError() && currentPromise.item.containDepends(prevPromise.item.name)
 
       if (forceFail) {
-        // TODO: implement isLast
-        // TODO: centrelize reject to promise
-        currentPromise.reject(null, true, this.lastComplete?.item.value)
+        currentPromise.reject(null, nextPromise === undefined, this.lastComplete?.item.value)
       }
-
-      const nextPromise = this.promises[index + 1]
 
       const replaced = currentPromise.item.canReplace &&
         nextPromise?.item.containWaitFor(currentPromise.item.name) &&
         nextPromise?.item.name === currentPromise.item.name
 
       if (replaced) {
-        // TODO: implement isLast
-        // TODO: centrelize resolve to promise
-        currentPromise.resolve(true, this.lastComplete?.item.value)
+        currentPromise.resolve(false, this.lastComplete?.item.value)
 
         index++
 
@@ -101,19 +102,25 @@ export class Queuelly<V> {
       }
 
       if ((!prevPromise || prevPromise.item.isPending() || prevPromise.item.isFinally()) && !forceFail && !replaced) {
+        indexesPromisesRunning.push(index)
+
         promisesRunning.push(new Promise(async resolve => {
           try {
             const result = await currentPromise.item.promise()
 
-            // TODO: implement isLast
-            // TODO: centrelize resolve to promise
-            currentPromise.resolve(true, result)
+            const onePromisePending = indexesPromisesRunning.filter(i => this.promises[i].item.isPending()).length === 1
+
+            const isLast = onePromisePending && this.promises[index + 1] === undefined
+
+            currentPromise.resolve(isLast, result)
 
             this.lastComplete = currentPromise
           } catch (err) {
-            // TODO: implement isLast
-            // TODO: centrelize reject to promise
-            currentPromise.reject(err, true, this.lastComplete?.item.value)
+            const onePromisePending = indexesPromisesRunning.filter(i => this.promises[i].item.isPending()).length === 1
+
+            const isLast = onePromisePending && this.promises[index + 1] === undefined
+
+            currentPromise.reject(err, isLast, this.lastComplete?.item.value)
           } finally {
             resolve(undefined)
           }
@@ -127,6 +134,8 @@ export class Queuelly<V> {
         await Promise.all(promisesRunning)
 
         promisesRunning = []
+
+        indexesPromisesRunning = []
       }
 
       index++
