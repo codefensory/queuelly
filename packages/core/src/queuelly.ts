@@ -1,6 +1,5 @@
 // TODO: comment all
 // TODO: implements logs
-// TODO: apply types
 
 import debug from "debug";
 
@@ -90,7 +89,7 @@ export class Queuelly<V> {
         nextItem?.name === currItem.name
 
       if (replaced) {
-        currPromise.resolve(this.lastItemComplete?.value, { isLast: false })
+        currPromise.resolve(undefined, { isLast: false })
 
         index++
 
