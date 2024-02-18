@@ -1,5 +1,6 @@
 // TODO: comment all
 // TODO: implements logs
+// TODO: implements events
 
 import debug from "debug";
 
@@ -20,7 +21,15 @@ export class Queuelly<V> {
 
   private lastItemComplete: QueuellyItem<V> | undefined
 
-  public constructor(private listener?: (isPending: boolean) => void) { }
+  private events = new EventTarget()
+
+  public addEventListener(eventName: 'startProcess' | 'endProcess', callback: () => void) {
+    this.events.addEventListener(eventName, callback)
+  }
+
+  public removeEventListener(eventName: 'startProcessing' | 'endProcessing', callback: () => void) {
+    this.events.removeEventListener(eventName, callback)
+  }
 
   public add<R>(
     queuellyOptions: QueuellyOptions<V>
@@ -61,7 +70,7 @@ export class Queuelly<V> {
   private async processQueue() {
     this.isPending = true
 
-    this.notifyQueueStatus()
+    this.events.dispatchEvent(new Event('startProcess'))
 
     let index = 0
 
@@ -138,7 +147,7 @@ export class Queuelly<V> {
 
     this.isPending = false
 
-    this.notifyQueueStatus()
+    this.events.dispatchEvent(new Event('endProcess'))
   }
 
   private notifyQueueStatus() {

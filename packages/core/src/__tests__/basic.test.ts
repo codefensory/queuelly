@@ -33,7 +33,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     queuelly.add({
       name: 'update',
@@ -59,7 +61,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     queuelly.add({
       name: 'add',
@@ -93,7 +97,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     queuelly.add({
       name: 'add',
@@ -127,7 +133,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     queuelly.add({
       name: 'add',
@@ -161,7 +169,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     queuelly.add({
       name: 'add',
@@ -203,7 +213,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     queuelly.add({
       name: 'add',
@@ -251,7 +263,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     const createAddSpot = (value: number, opts: { key: number }) => {
       return queuelly.add({
@@ -311,7 +325,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     const createAddSpot = (value: number, opts: { key: number, fails?: boolean }) => {
       return queuelly.add({
@@ -383,7 +399,9 @@ describe("Basic uses cases", () => {
 
     const { waitMethod: completedQueuelly, runMethod } = createWaitMethod()
 
-    const queuelly = new Queuelly<number>((pending) => !pending && runMethod())
+    const queuelly = new Queuelly<number>()
+
+    queuelly.addEventListener('endProcess', runMethod)
 
     const createAddSpot = (value: number, opts: { key: number, fails?: boolean, delay: number }) => {
       return queuelly.add({
