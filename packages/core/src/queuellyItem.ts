@@ -1,102 +1,56 @@
 import shortid from "shortid"
-import { QueuellyState } from "./utils";
 
-export interface QueuellyOptions<V, R> {
+enum QueuellyState {
+  None,
+  Pending,
+  Complete,
+  Error
+}
+
+export interface QueuellyOptions<V> {
   name: string;
-  action: () => Promise<R>;
+  action: () => Promise<V>;
   depends?: string[];
   waitFor?: string[];
   canReplace?: boolean;
-  onComplete?(isLast: boolean, value: R, lastValueCompleted?: V | R): void;
-  onError?(isLast: boolean, value: V | undefined): void;
+  onComplete?(value: V, ctx: { isLast: boolean }): void;
+  onError?(reason: any, ctx: { isLast: boolean, lastValue: V | undefined }): void;
 }
 
-export class QueuellyItem<V, R = any> {
-  public id: string;
-  public name: string;
-  public action: () => Promise<R>;
-  public state: QueuellyState;
-  public depends: string[];
-  public waitFor: string[];
-  public canReplace: boolean;
+export interface QueuellyItem<V> extends Omit<QueuellyOptions<V>, "depends" | "waitFor"> {
+  id: string
+  value?: V | undefined
+  depends: (name: string) => boolean
+  waitFor: (name: string) => boolean
+  pending: () => void
+  isPending: () => boolean
+  complete: () => void
+  isComplete: () => boolean
+  error: () => void
+  isError: () => boolean
+  isFinally: () => boolean
+  promise: () => Promise<V>
+}
 
-  public value: V | R | undefined;
+export function createQueuellyItem<V>(options: QueuellyOptions<V>): QueuellyItem<V> {
+  let state: QueuellyState = QueuellyState.None
 
-  public onComplete:
-    | ((isLast: boolean, value: R, lastValueCompleted?: V | R) => void)
-    | undefined;
-  public onError: ((isLast: boolean, value: V | undefined) => void) | undefined;
-
-  constructor(options: QueuellyOptions<V, R>) {
-    this.id = shortid.generate();
-    this.name = options.name;
-    this.action = options.action;
-    this.state = QueuellyState.None;
-    this.depends = options.depends ?? [];
-    this.waitFor = options.waitFor ?? this.depends;
-    this.canReplace = !!options.canReplace;
-    this.onComplete = options.onComplete;
-    this.onError = options.onError;
-  }
-
-  error() {
-    this.state = QueuellyState.Error;
-  }
-
-  pending() {
-    this.state = QueuellyState.Pending;
-  }
-
-  complete() {
-    this.state = QueuellyState.Complete;
-  }
-
-  partialComplete() {
-    this.state = QueuellyState.PartialComplete;
-  }
-
-  isPending() {
-    return this.state === QueuellyState.Pending;
-  }
-
-  isFinally() {
-    return !!(
-      this.state &
-      (QueuellyState.Complete | QueuellyState.Error)
-    );
-  }
-
-  isComplete() {
-    return this.state === QueuellyState.Complete;
-  }
-
-  isPartialComplete() {
-    return this.state === QueuellyState.PartialComplete;
-  }
-
-  isError() {
-    return this.state === QueuellyState.Error;
-  }
-
-  containWaitFor(itemName: string | undefined) {
-    if (!itemName) {
-      return false;
+  return {
+    ...options,
+    // TODO: Optimize or delete this
+    id: shortid(),
+    depends: (name) => !!options.depends?.includes(name),
+    waitFor: (name) => !!options.waitFor?.includes(name),
+    pending: () => state = QueuellyState.Pending,
+    isPending: () => state === QueuellyState.Pending,
+    complete: () => state = QueuellyState.Complete,
+    isComplete: () => state === QueuellyState.Complete,
+    isFinally: () => state === QueuellyState.Complete || state === QueuellyState.Error,
+    error: () => state = QueuellyState.Error,
+    isError: () => state === QueuellyState.Error,
+    promise: () => {
+      state = QueuellyState.Pending
+      return options.action()
     }
-
-    return this.waitFor.indexOf(itemName) !== -1;
-  }
-
-  containDepends(itemName: string | undefined) {
-    if (!itemName) {
-      return false;
-    }
-
-    return this.depends.indexOf(itemName) !== -1;
-  }
-
-  promise() {
-    this.state = QueuellyState.Pending;
-
-    return this.action();
   }
 }

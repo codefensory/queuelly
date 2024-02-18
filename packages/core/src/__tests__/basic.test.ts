@@ -258,7 +258,7 @@ describe("Basic uses cases", () => {
         name: 'add',
         waitFor: ['update'],
         action: () => run(numberLocalAPI.make().add(value), opts.key),
-        onComplete: (isLast, value) => {
+        onComplete: (value, { isLast }) => {
           if (isLast) {
             optimisticValue = value
           }
@@ -273,7 +273,7 @@ describe("Basic uses cases", () => {
         waitFor: ["update"],
         canReplace: true,
         action: () => run(numberLocalAPI.make().update(value), opts.key),
-        onComplete: (isLast, value) => {
+        onComplete: (value, { isLast }) => {
           if (isLast) {
             optimisticValue = value
           }
@@ -318,14 +318,14 @@ describe("Basic uses cases", () => {
         name: 'add',
         waitFor: ['update'],
         action: () => run(numberLocalAPI.make({ fails: opts.fails }).add(value), opts.key),
-        onComplete: (isLast, value) => {
+        onComplete: (value, { isLast }) => {
           if (isLast) {
             optimisticValue = value
           }
         },
-        onError: (isLast, value) => {
-          if (isLast && value) {
-            optimisticValue = value
+        onError: (_, { isLast, lastValue }) => {
+          if (isLast && lastValue) {
+            optimisticValue = lastValue
           } else {
             optimisticValue -= 1
           }
@@ -340,14 +340,14 @@ describe("Basic uses cases", () => {
         waitFor: ["update"],
         canReplace: true,
         action: () => run(numberLocalAPI.make({ fails: opts.fails }).update(value), opts.key),
-        onComplete: (isLast, value) => {
+        onComplete: (value, { isLast }) => {
           if (isLast) {
             optimisticValue = value
           }
         },
-        onError: (isLast, value) => {
-          if (isLast && value) {
-            optimisticValue = value
+        onError: (_, { isLast, lastValue }) => {
+          if (isLast && lastValue) {
+            optimisticValue = lastValue
           }
         }
       })
@@ -390,14 +390,14 @@ describe("Basic uses cases", () => {
         name: 'add',
         waitFor: ['update'],
         action: () => run(numberLocalAPI.make({ fails: opts.fails, delay: opts.delay }).add(value), opts.key),
-        onComplete: (isLast, value) => {
+        onComplete: (value, { isLast }) => {
           if (isLast) {
             optimisticValue = value
           }
         },
-        onError: (isLast, value) => {
-          if (isLast && value) {
-            optimisticValue = value
+        onError: (_, { isLast, lastValue }) => {
+          if (isLast && lastValue) {
+            optimisticValue = lastValue
           } else {
             optimisticValue -= 1
           }
@@ -412,15 +412,14 @@ describe("Basic uses cases", () => {
         waitFor: ["update"],
         canReplace: true,
         action: () => run(numberLocalAPI.make({ fails: opts.fails }).update(value), opts.key),
-        onComplete: (isLast, value) => {
+        onComplete: (value, { isLast }) => {
           if (isLast) {
-            // TODO: Verify total set optimistic
             optimisticValue = value
           }
         },
-        onError: (isLast, value) => {
-          if (isLast && value) {
-            optimisticValue = value
+        onError: (_, { isLast, lastValue }) => {
+          if (isLast && lastValue) {
+            optimisticValue = lastValue
           }
         }
       })
