@@ -1,2 +1,5 @@
-export * from "./queuelly"
-export * from "./queuellyItem"
+import { Queuelly } from "./queuelly";
+
+export function createQueuelly<T>() {
+  return new Queuelly<T>();
+}

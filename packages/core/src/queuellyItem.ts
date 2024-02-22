@@ -4,7 +4,7 @@ enum QueuellyState {
   None,
   Pending,
   Complete,
-  Error
+  Error,
 }
 
 export interface QueuellyOptions<V> {
@@ -29,6 +29,7 @@ export interface QueuellyItem<V> extends Omit<QueuellyOptions<V>, "depends" | "w
   error: () => void
   isError: () => boolean
   isFinally: () => boolean
+  isInitialized: () => boolean
   promise: () => Promise<V>
 }
 
@@ -48,9 +49,7 @@ export function createQueuellyItem<V>(options: QueuellyOptions<V>): QueuellyItem
     isFinally: () => state === QueuellyState.Complete || state === QueuellyState.Error,
     error: () => state = QueuellyState.Error,
     isError: () => state === QueuellyState.Error,
-    promise: () => {
-      state = QueuellyState.Pending
-      return options.action()
-    }
+    isInitialized: () => state !== QueuellyState.None,
+    promise: () => options.action()
   }
 }

@@ -2,6 +2,7 @@
   "name": "@queuelly/core",
   "version": "0.0.0",
   "private": true,
+  "main": "./src/index.ts",
   "scripts": {
     "dev": "echo 'Add dev script here'",
     "build": "echo 'Add build script here'",
@@ -14,8 +15,10 @@
     "debug": "*"
   },
   "dependencies": {
-    "@types/shortid": "^0.0.32",
-    "oxide.ts": "^1.1.0",
     "shortid": "^2.2.16"
+  },
+  "devDependencies": {
+    "@types/shortid": "^0.0.32",
+    "@queuelly/utils": "workspace:*"
   }
 }

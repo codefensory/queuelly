@@ -1,9 +1,10 @@
-import MakeLocalAPI from "./makeLocalAPI";
+import { MakeLocalAPI } from "@queuelly/utils";
 
-const createNumberLocalAPI = () => new MakeLocalAPI(0, (_, set) => ({
-  add: (amount: number) => set(store => store + amount),
-  update: (value: number) => set(value),
-  decrement: (amount: number) => set(store => store - amount)
-}))
+const createNumberLocalAPI = () =>
+  new MakeLocalAPI(0, (_, set) => ({
+    add: (amount: number) => set((store) => store + amount),
+    update: (value: number) => set(value),
+    decrement: (amount: number) => set((store) => store - amount),
+  }));
 
-export default createNumberLocalAPI
+export default createNumberLocalAPI;

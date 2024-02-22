@@ -245,11 +245,11 @@ describe("Basic uses cases", () => {
 
     await waitMethod
 
+    expect(control(2).ran()).toBeUndefined()
+
     expect(numberLocalAPI.get()).toBe(3)
 
     expect(control(0).ranBefore(1)).toBe(true)
-
-    expect(control(2).ran()).toBeUndefined()
 
     expect(control(1).ranBefore(3)).toBe(true)
   })
@@ -423,13 +423,13 @@ describe("Basic uses cases", () => {
       })
     }
 
-    const createUpdateSpot = (value: number, opts: { key: number, fails?: boolean }) => {
+    const createUpdateSpot = (value: number, opts: { key: number, fails?: boolean, delay?: number }) => {
       return queuelly.add({
         name: 'update',
         depends: ['add'],
         waitFor: ["update"],
         canReplace: true,
-        action: () => run(numberLocalAPI.make({ fails: opts.fails }).update(value), opts.key),
+        action: () => run(numberLocalAPI.make({ fails: opts.fails, delay: opts.delay }).update(value), opts.key),
         onComplete: (value, { isLast }) => {
           if (isLast) {
             optimisticValue = value
@@ -443,22 +443,24 @@ describe("Basic uses cases", () => {
       })
     }
 
-    createUpdateSpot(2, { key: 0 })
+    createAddSpot(1, { key: 1, delay: 400 })
 
     createAddSpot(2, { key: 2, delay: 100 })
 
-    createAddSpot(1, { key: 1, delay: 400 })
+    createAddSpot(1, { key: 3, delay: 50, fails: true })
 
-    createAddSpot(2, { key: 3, delay: 101 })
+    createUpdateSpot(5, { key: 4, delay: 100 })
 
-    createAddSpot(1, { key: 4, delay: 102 })
+    createAddSpot(1, { key: 5, delay: 200 })
+
+    createAddSpot(1, { key: 6, delay: 100 })
 
     await completedQueuelly
 
-    expect(numberLocalAPI.get()).toBe(8)
+    expect(numberLocalAPI.get()).toBe(5)
 
-    expect(optimisticValue).toBe(8)
+    expect(optimisticValue).toBe(5)
 
-    expect(ranOrder()).toBe([0, 2, 3, 4, 1].toString())
+    expect(ranOrder()).toBe([3, 2, 1, 6, 5].toString())
   })
 })

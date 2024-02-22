@@ -1,4 +1,4 @@
-import wait from "./wait"
+import wait from "../../core/src/__tests__/utils/wait"
 
 type Method = (...args: any[]) => any
 

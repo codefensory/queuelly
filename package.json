@@ -1,13 +1,15 @@
 {
   "name": "queuelly",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "description": "A smart promise management library for JavaScript",
   "main": "index.js",
   "scripts": {
     "test": "turbo run test"
   },
   "keywords": [],
-  "author": "",
+  "author": "Yeferson Mejias <yefer.el.teke@gmail.com>",
   "license": "ISC",
   "packageManager": "pnpm@8.14.1",
   "dependencies": {
