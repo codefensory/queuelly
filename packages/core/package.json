@@ -1,11 +1,11 @@
 {
   "name": "@queuelly/core",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "author": "Codefensory <yefer.el.teke@gmail.com>",
   "scripts": {
     "prebuild": "rm -rf dist",
     "dev": "tsup src/index.ts --watch",
@@ -16,6 +16,11 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "promises",
+    "library",
+    "async"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/codefensory/queuelly.git",
