@@ -19,7 +19,7 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm ci
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run tests
         run: pnpm test
