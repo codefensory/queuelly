@@ -19,13 +19,13 @@ export class Queuelly<V> {
 
   private events = new EventTarget()
 
-  // index de la promesa que se esta procesando
+  // index of the promise that is being processed
   private index = 0
 
-  // Lista todas promesas que se estan ejecuando
+  // list of all promises that are being executed
   private promisesRunning: Promise<any>[] = []
 
-  // Lista de los index de todas las colas que se estan ejecutando
+  // list of the indexes of all the queues that are running
   private indexesPromisesRunning: number[] = []
 
   public addEventListener(eventName: "startProcess" | "endProcess", callback: () => void) {
@@ -36,7 +36,7 @@ export class Queuelly<V> {
     this.events.removeEventListener(eventName, callback)
   }
 
-  public add<R>(queuellyOptions: QueuellyOptions<V>): Promise<V | R | null | undefined> {
+  public add(queuellyOptions: QueuellyOptions<V>): Promise<V | null | undefined> {
     const queuellyItem = createQueuellyItem(queuellyOptions)
 
     return new Promise((resolve) => {
@@ -67,7 +67,7 @@ export class Queuelly<V> {
       const lastPromise = this.promises[this.promises.length - 1]
 
       if (lastPromise) {
-        // Podemos saltar una promesa si la que se esta agregando es igual que la anterior y la espera
+        // we can skip a promise if the one being added is the same as the previous one and waits
         const replaced =
           lastPromise.item.canReplace &&
           queuellyItem.waitFor(lastPromise.item.name) &&
@@ -120,7 +120,7 @@ export class Queuelly<V> {
         item: undefined,
       }
 
-      // Si el anterior fallo y la actual depende del anterior, tambien fallara este
+      // if the previous failure and the current one depends on the previous one, this one will also fail
       const forceFail = prevItem?.isError() && currItem.depends(prevItem.name)
 
       if (forceFail) {
@@ -140,7 +140,7 @@ export class Queuelly<V> {
         }
       }
 
-      // Solo ejecutamos la promesa cuando el anterior no existe o ya se finalizo
+      // we only execute the promise when the previous one does not exist or has already been completed
       if ((!prevItem || prevItem.isPending() || prevItem.isFinally()) && !forceFail) {
         const pendingIndex = this.index
 
@@ -155,7 +155,7 @@ export class Queuelly<V> {
             try {
               const result = await currItem.promise()
 
-              // Es el ultimo cuando solo queda una promesa pendiente y ya no hay mas promesas por procesar
+              // it is the last one when there is only one pending promise and there are no more promises to process
               const isLast = this.indexesPromisesRunning.length === 1 && this.promises[this.index] === undefined
 
               currPromise.resolve(result, { isLast })
@@ -164,7 +164,7 @@ export class Queuelly<V> {
 
               this.lastItemComplete = currItem
             } catch (err) {
-              // Es el ultimo cuando solo queda una promesa pendiente y ya no hay mas promesas por procesar
+              // it is the last one when there is only one pending promise and there are no more promises to process
               const isLast = this.indexesPromisesRunning.length === 1 && this.promises[this.index] === undefined
 
               currPromise.reject(err, {
@@ -190,7 +190,7 @@ export class Queuelly<V> {
                 this.index = 0
               }
 
-              // Si falla o se completa, completamos este item
+              // if it fails or completes, we complete this item
               resolve(undefined)
             }
           }),

@@ -2,13 +2,28 @@
   "name": "@queuelly/core",
   "version": "0.0.0",
   "private": true,
-  "main": "./src/index.ts",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "echo 'Add dev script here'",
-    "build": "echo 'Add build script here'",
+    "prebuild": "rm -rf dist",
+    "dev": "tsup src/index.ts --watch",
+    "build": "tsup src/index.ts --dts --format esm,cjs",
     "test": "vitest run",
     "lint": "echo 'Add lint script here'"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codefensory/queuelly.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "typescript": "*",
     "vitest": "*",
