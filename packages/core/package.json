@@ -1,6 +1,6 @@
 {
   "name": "@queuelly/core",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -20,11 +20,7 @@
     "library",
     "async"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/codefensory/queuelly.git",
-    "directory": "packages/core"
-  },
+  "repository": "https://github.com/codefensory/queuelly",
   "files": [
     "dist"
   ],
