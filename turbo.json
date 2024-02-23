@@ -1,8 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "build": {},
-   "dev": {},
+    "build": {
+      "dependsOn": ["^build"]
+    },
+    "dev": {},
     "test": {
       "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
     }
