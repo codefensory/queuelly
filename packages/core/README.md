@@ -7,13 +7,13 @@ Queuelly is a TypeScript library designed to manage asynchronous operations in a
 You can install Queuelly via npm or yarn:
 
 ```bash
-npm install queuelly
+npm install @queuelly/core
 ```
 
 or
 
 ```bash
-yarn add queuelly
+yarn add @queuelly/core
 ```
 
 ## Basic usage
@@ -23,7 +23,7 @@ yarn add queuelly
 To start using Queuelly, you first need to create a Queuelly instance:
 
 ```TS
-import { createQueuelly } from 'queuelly';
+import { createQueuelly } from '@queuelly/core';
 
 const queuelly = createQueuelly<void>();
 ```
@@ -60,7 +60,7 @@ queuelly.addEventListener('endProcess', () => {
 ## Basic example
 
 ```TS
-import { createQueuelly } from 'queuelly';
+import { createQueuelly } from '@queuelly/core';
 
 // Create a Queuelly instance
 const queuelly = createQueuelly<void>();
