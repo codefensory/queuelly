@@ -1,17 +1,16 @@
 {
   "name": "@queuelly/core",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Codefensory <yefer.el.teke@gmail.com>",
   "scripts": {
     "prebuild": "rm -rf dist",
     "dev": "tsup src/index.ts --watch",
-    "build": "tsup src/index.ts --dts --format esm,cjs",
-    "test": "vitest run",
-    "lint": "echo 'Add lint script here'"
+    "build": "tsup src/index.ts --format esm,cjs",
+    "test": "vitest run"
   },
   "publishConfig": {
     "access": "public"
@@ -33,9 +32,6 @@
     "typescript": "*",
     "vitest": "*",
     "debug": "*"
-  },
-  "dependencies": {
-    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "@types/shortid": "^0.0.32",
