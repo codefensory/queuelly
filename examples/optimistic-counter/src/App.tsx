@@ -32,9 +32,9 @@ function App() {
           </span>{" "}
           decrease (-) or increment (+) the counter but server fail
         </p>
-        <p className="mt-2 text-white text-center">Left input update the counter</p>
+        <p className="mt-2 text-white text-center">Right input update the counter</p>
         <p className="mt-2 text-white text-center">
-          Right input update the counter but server fail
+          Left input update the counter but server fail
         </p>
         <p className="mt-8 text-gray-400 text-center">
           Use console to view queuelly logs (enable Verbose level)
