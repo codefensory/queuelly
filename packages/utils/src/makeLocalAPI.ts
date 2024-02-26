@@ -1,4 +1,4 @@
-import wait from "../../core/src/__tests__/utils/wait"
+import wait from "./wait"
 
 type Method = (...args: any[]) => any
 
@@ -32,27 +32,32 @@ class MakeLocalAPI<S, A extends ObjectMethods> {
   }
 
   public make(opts: RunOptions = { delay: 1 }) {
-    return Object.keys(this.actions).reduce((acc, key) => ({
-      ...acc,
-      [key]: this.generateAction(opts, this.actions[key])
-    }), {} as ToPromises<A>)
+    return Object.keys(this.actions).reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: this.generateAction(opts, this.actions[key]),
+      }),
+      {} as ToPromises<A>,
+    )
   }
-
 
   private set(change: SetStore<any>): S {
-    if (typeof change !== 'function') {
-      return this.store = change
+    if (typeof change !== "function") {
+      return (this.store = change)
     }
 
-    return this.store = change(this.store)
+    return (this.store = change(this.store))
   }
 
-  private generateAction<P extends Method>(opts: RunOptions, action: P): (...args: Parameters<P>) => Promise<ReturnType<P>> {
+  private generateAction<P extends Method>(
+    opts: RunOptions,
+    action: P,
+  ): (...args: Parameters<P>) => Promise<ReturnType<P>> {
     return async (...args: Parameters<P>) => {
       await wait(opts.delay ?? 0)
 
       if (opts.fails) {
-        throw new Error('Server Error')
+        throw new Error("Server Error")
       }
 
       return action(...args)
