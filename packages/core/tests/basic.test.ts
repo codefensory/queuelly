@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { Queuelly } from "../queuelly";
-import createNumberLocalAPI from "./utils/createNumberLocalAPI";
-import runran from "./utils/runran";
-import createWaitMethod from "./utils/waitMethod";
+import { describe, expect, it } from "vitest"
+import { Queuelly } from "../src/queuelly"
+import createNumberLocalAPI from "./utils/createNumberLocalAPI"
+import runran from "./utils/runran"
+import createWaitMethod from "./utils/waitMethod"
 
 describe("Basic uses cases", () => {
   it("runs a simple promise", async () => {
@@ -13,7 +13,7 @@ describe("Basic uses cases", () => {
     const action = async () => {
       executed = true
 
-      return 0;
+      return 0
     }
 
     const result = await queuelly.add({
@@ -35,15 +35,15 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
     queuelly.add({
-      name: 'update',
-      action: () => run(numberLocalAPI.make().update(4), 0)
+      name: "update",
+      action: () => run(numberLocalAPI.make().update(4), 0),
     })
 
     queuelly.add({
-      name: 'add',
+      name: "add",
       action: () => run(numberLocalAPI.make().add(1), 1),
     })
 
@@ -63,21 +63,21 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
     queuelly.add({
-      name: 'add',
-      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0)
+      name: "add",
+      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0),
     })
 
     queuelly.add({
-      name: 'add',
+      name: "add",
       action: () => run(numberLocalAPI.make({ delay: 200 }).add(1), 1),
     })
 
     queuelly.add({
-      name: 'update',
-      waitFor: ['add'],
+      name: "update",
+      waitFor: ["add"],
       action: () => run(numberLocalAPI.make({ delay: 50 }).update(4), 2),
     })
 
@@ -99,21 +99,21 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
     queuelly.add({
-      name: 'add',
-      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0)
+      name: "add",
+      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0),
     })
 
     queuelly.add({
-      name: 'add',
+      name: "add",
       action: () => run(numberLocalAPI.make({ delay: 200 }).add(1), 1),
     })
 
     queuelly.add({
-      name: 'update',
-      depends: ['add'],
+      name: "update",
+      depends: ["add"],
       action: () => run(numberLocalAPI.make({ delay: 50 }).update(4), 2),
     })
 
@@ -135,21 +135,21 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
     queuelly.add({
-      name: 'add',
-      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0)
+      name: "add",
+      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0),
     })
 
     queuelly.add({
-      name: 'add',
+      name: "add",
       action: () => run(numberLocalAPI.make({ delay: 200, fails: true }).add(1), 1),
     })
 
     queuelly.add({
-      name: 'update',
-      depends: ['add'],
+      name: "update",
+      depends: ["add"],
       action: () => run(numberLocalAPI.make().update(4), 2),
     })
 
@@ -171,27 +171,27 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
     queuelly.add({
-      name: 'add',
-      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0)
+      name: "add",
+      action: () => run(numberLocalAPI.make({ delay: 100 }).add(1), 0),
     })
 
     queuelly.add({
-      name: 'add',
+      name: "add",
       action: () => run(numberLocalAPI.make({ delay: 200, fails: true }).add(1), 1),
     })
 
     queuelly.add({
-      name: 'update',
-      depends: ['add'],
+      name: "update",
+      depends: ["add"],
       action: () => run(numberLocalAPI.make().update(6), 2),
     })
 
     queuelly.add({
-      name: 'update',
-      depends: ['add'],
+      name: "update",
+      depends: ["add"],
       action: () => run(numberLocalAPI.make().update(4), 3),
     })
 
@@ -215,29 +215,29 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
     queuelly.add({
-      name: 'add',
-      action: () => run(numberLocalAPI.make().add(1), 0)
+      name: "add",
+      action: () => run(numberLocalAPI.make().add(1), 0),
     })
 
     queuelly.add({
-      name: 'add',
+      name: "add",
       action: () => run(numberLocalAPI.make().add(1), 1),
     })
 
     queuelly.add({
-      name: 'update',
-      depends: ['add'],
+      name: "update",
+      depends: ["add"],
       waitFor: ["update"],
       canReplace: true,
       action: () => run(numberLocalAPI.make().update(6), 2),
     })
 
     queuelly.add({
-      name: 'update',
-      depends: ['add'],
+      name: "update",
+      depends: ["add"],
       waitFor: ["update"],
       canReplace: true,
       action: () => run(numberLocalAPI.make().update(3), 3),
@@ -265,25 +265,25 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
     const createAddSpot = (value: number, opts: { key: number }) => {
       return queuelly.add({
-        name: 'add',
-        waitFor: ['update'],
+        name: "add",
+        waitFor: ["update"],
         action: () => run(numberLocalAPI.make().add(value), opts.key),
         onComplete: (value, { isLast }) => {
           if (isLast) {
             optimisticValue = value
           }
-        }
+        },
       })
     }
 
     const createUpdateSpot = (value: number, opts: { key: number }) => {
       return queuelly.add({
-        name: 'update',
-        depends: ['add'],
+        name: "update",
+        depends: ["add"],
         waitFor: ["update"],
         canReplace: true,
         action: () => run(numberLocalAPI.make().update(value), opts.key),
@@ -291,7 +291,7 @@ describe("Basic uses cases", () => {
           if (isLast) {
             optimisticValue = value
           }
-        }
+        },
       })
     }
 
@@ -327,12 +327,12 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
-    const createAddSpot = (value: number, opts: { key: number, fails?: boolean }) => {
+    const createAddSpot = (value: number, opts: { key: number; fails?: boolean }) => {
       return queuelly.add({
-        name: 'add',
-        waitFor: ['update'],
+        name: "add",
+        waitFor: ["update"],
         action: () => run(numberLocalAPI.make({ fails: opts.fails }).add(value), opts.key),
         onComplete: (value, { isLast }) => {
           if (isLast) {
@@ -345,14 +345,14 @@ describe("Basic uses cases", () => {
           } else {
             optimisticValue -= 1
           }
-        }
+        },
       })
     }
 
-    const createUpdateSpot = (value: number, opts: { key: number, fails?: boolean }) => {
+    const createUpdateSpot = (value: number, opts: { key: number; fails?: boolean }) => {
       return queuelly.add({
-        name: 'update',
-        depends: ['add'],
+        name: "update",
+        depends: ["add"],
         waitFor: ["update"],
         canReplace: true,
         action: () => run(numberLocalAPI.make({ fails: opts.fails }).update(value), opts.key),
@@ -365,7 +365,7 @@ describe("Basic uses cases", () => {
           if (isLast && lastValue) {
             optimisticValue = lastValue
           }
-        }
+        },
       })
     }
 
@@ -401,12 +401,12 @@ describe("Basic uses cases", () => {
 
     const queuelly = new Queuelly<number>()
 
-    queuelly.addEventListener('endProcess', runMethod)
+    queuelly.addEventListener("endProcess", runMethod)
 
-    const createAddSpot = (value: number, opts: { key: number, fails?: boolean, delay: number }) => {
+    const createAddSpot = (value: number, opts: { key: number; fails?: boolean; delay: number }) => {
       return queuelly.add({
-        name: 'add',
-        waitFor: ['update'],
+        name: "add",
+        waitFor: ["update"],
         action: () => run(numberLocalAPI.make({ fails: opts.fails, delay: opts.delay }).add(value), opts.key),
         onComplete: (value, { isLast }) => {
           if (isLast) {
@@ -419,14 +419,14 @@ describe("Basic uses cases", () => {
           } else {
             optimisticValue -= 1
           }
-        }
+        },
       })
     }
 
-    const createUpdateSpot = (value: number, opts: { key: number, fails?: boolean, delay?: number }) => {
+    const createUpdateSpot = (value: number, opts: { key: number; fails?: boolean; delay?: number }) => {
       return queuelly.add({
-        name: 'update',
-        depends: ['add'],
+        name: "update",
+        depends: ["add"],
         waitFor: ["update"],
         canReplace: true,
         action: () => run(numberLocalAPI.make({ fails: opts.fails, delay: opts.delay }).update(value), opts.key),
@@ -439,7 +439,7 @@ describe("Basic uses cases", () => {
           if (isLast && lastValue) {
             optimisticValue = lastValue
           }
-        }
+        },
       })
     }
 
