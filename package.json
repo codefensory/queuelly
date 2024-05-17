@@ -13,7 +13,7 @@
   "keywords": [],
   "author": "Yeferson Mejias <yefer.el.teke@gmail.com>",
   "license": "ISC",
-  "packageManager": "pnpm@8.14.1",
+  "packageManager": "pnpm@9.1.1",
   "dependencies": {
     "@types/debug": "^4.1.12",
     "debug": "^4.3.4",
