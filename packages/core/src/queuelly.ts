@@ -4,6 +4,10 @@ import { QueuellyItem, QueuellyOptions, createQueuellyItem } from "./queuellyIte
 
 const log = debug("queuelly")
 
+interface QueuellyParams {
+  runManual?: boolean
+}
+
 interface PromiseItem<V> {
   item: QueuellyItem<V>
   resolve(value: V | undefined, ctx: { isLast: boolean }): void
@@ -27,6 +31,14 @@ export class Queuelly<V> {
 
   // list of the indexes of all the queues that are running
   private indexesPromisesRunning: number[] = []
+
+  private runManual: boolean
+
+  private currentRun: Promise<void> | null = null
+
+  public constructor(options?: QueuellyParams) {
+    this.runManual = !!options?.runManual
+  }
 
   public addEventListener(eventName: "startProcess" | "endProcess", callback: () => void) {
     this.events.addEventListener(eventName, callback)
@@ -85,7 +97,7 @@ export class Queuelly<V> {
 
       this.promises.push(queuePromise)
 
-      if (!this.isPending) {
+      if (!this.isPending && !this.runManual) {
         this.processQueue()
       }
     })
@@ -201,5 +213,13 @@ export class Queuelly<V> {
     }
 
     this.isPending = false
+  }
+
+  public async run() {
+    if (!this.isPending) {
+      await this.processQueue()
+    }
+
+    await Promise.all(this.promisesRunning)
   }
 }
