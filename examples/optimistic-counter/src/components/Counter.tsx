@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { BlueButton, RedButton } from "./Buttons"
 import Input from "./Input"
 
-import { createQueuelly } from "@queuelly/core"
+import { Queuelly } from "@queuelly/core"
 import useLocalServer from "../providers/useLocalServer"
+import { useWaitForQueuelly } from "@queuelly/react"
 
-const counterQueue = createQueuelly<number>()
+const counterQueue = new Queuelly<number>()
 
 const Counter = () => {
-  const [queueIsProcessing, setQueueIsProcessing] = useState(false)
+  const synchronizing = useWaitForQueuelly(counterQueue)
 
   // get local server instance
   const localServer = useLocalServer()
@@ -83,22 +84,6 @@ const Counter = () => {
     setCounter(numberValue)
   }
 
-  // Listen queue status
-  useEffect(() => {
-    const hanldeStartProcess = () => setQueueIsProcessing(true)
-
-    const hanldeEndProcess = () => setQueueIsProcessing(false)
-
-    counterQueue.addEventListener("startProcess", hanldeStartProcess)
-
-    counterQueue.addEventListener("endProcess", hanldeEndProcess)
-    return () => {
-      counterQueue.removeEventListener("startProcess", hanldeStartProcess)
-
-      counterQueue.removeEventListener("endProcess", hanldeEndProcess)
-    }
-  }, [])
-
   return (
     <div className="flex space-x-4">
       <RedButton onClick={() => handleCounterDecrement(true)}>-</RedButton>
@@ -116,7 +101,7 @@ const Counter = () => {
             onChange={(e) => handleCounterUpdate(e.target.value)}
           />
         </div>
-        {queueIsProcessing && (
+        {synchronizing && (
           <span className="absolute w-full mt-2 text-center animate-background-shine bg-[linear-gradient(110deg,#939393,45%,#1e293b,55%,#939393)] bg-[length:250%_100%] bg-clip-text text-md text-transparent">
             Synchronizing
           </span>

@@ -35,6 +35,9 @@ importers:
       '@queuelly/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@queuelly/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       debug:
         specifier: '*'
         version: 4.3.4
