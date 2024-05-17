@@ -26,12 +26,14 @@
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "@queuelly/core": "workspace:*"
+  },
   "peerDependencies": {
     "typescript": "*",
     "vitest": "*",
     "debug": "*",
-    "react": ">=16",
-    "@queuelly/core": "workspace:*"
+    "react": ">=16"
   },
   "devDependencies": {
     "@types/react": ">=16"
