@@ -1,0 +1,40 @@
+{
+  "name": "@queuelly/react",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Codefensory <yefer.el.teke@gmail.com>",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "dev": "tsup src/index.ts --watch",
+    "build": "tsup src/index.ts --format esm,cjs",
+    "test": "vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "promises",
+    "library",
+    "async",
+    "react",
+    "frontend",
+    "browser"
+  ],
+  "repository": "https://github.com/codefensory/queuelly",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "typescript": "*",
+    "vitest": "*",
+    "debug": "*",
+    "react": ">=16",
+    "@queuelly/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": ">=16"
+  }
+}
