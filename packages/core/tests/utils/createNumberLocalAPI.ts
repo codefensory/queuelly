@@ -1,4 +1,4 @@
-import { MakeLocalAPI } from "@queuelly/utils";
+import { MakeLocalAPI } from "../../../utils";
 
 const createNumberLocalAPI = () =>
   new MakeLocalAPI(0, (_, set) => ({
